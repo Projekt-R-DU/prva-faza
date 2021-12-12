@@ -1,4 +1,7 @@
-class NegativeLogLikelihood():
+import numpy as np
+
+
+class NegativeLogLikelihood:
     def __init__(self):
         self.has_params = False
 
@@ -26,4 +29,4 @@ class NegativeLogLikelihood():
       ndarray of shape (N, num_classes).
     """
         probs = self.softmax(x)
-        return (1/probs.shape[0]) * (probs - y)
+        return (1 / probs.shape[0]) * (probs - y)
