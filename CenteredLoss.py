@@ -25,6 +25,6 @@ class CenterLoss:
       x: ndarray of shape (N, num_classes).
       y: ndarray of shape (N, num_classes).
     Returns:
-
+        ndarray of shape (N, num_classes).
     """
         return x - self.centers(x, y)
