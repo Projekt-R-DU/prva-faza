@@ -5,12 +5,11 @@ class CenterLoss:
     def __init__(self, x, y):
         self.has_params = False
         self.centers = self.center(x, y)
-        self.x = x
 
     def center(self, x, y):
         return np.sum(x * y, axis=0, keepdims=True) / np.sum(y, axis=0, keepdims=True)
 
-    def forward(self):
+    def forward(self, x):
         """
     Args:
       x: ndarray of shape (N, num_classes).
@@ -18,9 +17,9 @@ class CenterLoss:
     Returns:
       Scalar, average loss over N examples.
     """
-        return (1 / 2) * np.sum((self.x - self.centers) ** 2)
+        return (1 / 2) * np.sum((x - self.centers) ** 2)
 
-    def backward_inputs(self):
+    def backward_inputs(self, x):
         """
     Args:
       x: ndarray of shape (N, num_classes).
@@ -28,4 +27,4 @@ class CenterLoss:
     Returns:
         ndarray of shape (N, num_classes).
     """
-        return self.x - self.centers
+        return x - self.centers
