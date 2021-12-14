@@ -1,5 +1,8 @@
 import numpy as np
 
+"""
+    Implementation: Make class instance before training or every time before starting a new epoch.        
+"""
 
 class CenterLoss:
     def __init__(self, x, y):
