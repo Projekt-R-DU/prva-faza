@@ -160,3 +160,17 @@ def selected_grad_attack(model, dataset, eps = 0.5, n = 100):
             break
 
     return wrong_predictions
+
+def show_grads(wrong_predictions, n = 5, p = 0.05):
+    fig, axs = plt.subplots(max(2, n), 2, figsize=(10, n * 10))
+    for i in range(n):
+        image = wrong_predictions[i][0]
+        k = int(p * image.nelement())
+        grads = image.grad.reshape(-1,)
+        abs_grads = torch.abs(grads)
+        kth_biggest_grad = abs_grads.kthvalue(abs_grads.numel() - k).values.item()
+        selected_grads = abs_grads.gt(kth_biggest_grad).int().reshape(image.shape) * 1.0
+        axs[i, 0].imshow(torch.clamp(image[0], min = 0.0, max = 1.0).detach().cpu().permute(1, 2, 0))
+        axs[i, 0].set_title(f"Originalna slika")
+        axs[i, 1].imshow(torch.clamp(selected_grads[0], min = 0.0, max = 1.0).detach().cpu().permute(1, 2, 0))
+        axs[i, 1].set_title(f"{int(p * 100)}% najznacajnijih gradijenata")
