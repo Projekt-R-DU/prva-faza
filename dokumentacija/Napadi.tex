@@ -19,11 +19,7 @@ Na primjer, kod modela za prepoznavanje znamenki, ulazna slika koju model inače
 
 \section{Sažetak} 
 
-Za izgradnju neprijateljskog primjera, koristiti ćemo metodu FGSM (engl. \textit{Fast Gradient Sign Method}). Ta metoda uključuje izračun gradijenata te njihovu primjenu na ulazne podatke, ali u smjeru najbržeg rasta funkcije gubitka. Na taj način dobivamo suprotan efekt učenju modela (a to je smanjenje funkcije gubitka i bolja klasifikacija) te udaljujemo izlazne vrijednosti od onih očekivanih. 
-
-Metodu primjenjujemo na način da ulazne podatke (u našem slučaju vrijednosti piksela slike) tretiramo kao parametre modela kako bi i za njih izračunali gradijente.  
-
-\textbf{ubaci sliku koda di to radimo ovdje? }
+Za izgradnju neprijateljskog primjera, koristiti ćemo metodu FGSM (engl. \textit{Fast Gradient Sign Method}). Ta metoda uključuje izračun gradijenata te njihovu primjenu na ulazne podatke, ali u smjeru najbržeg rasta funkcije gubitka. Na taj način dobivamo suprotan efekt učenju modela (a to je smanjenje funkcije gubitka i bolja klasifikacija) te udaljujemo izlazne vrijednosti od onih očekivanih. Metodu primjenjujemo na način da ulazne podatke (u našem slučaju vrijednosti piksela slike) tretiramo kao parametre modela kako bi i za njih izračunali gradijente. \\
 
 Koristili smo tri različita napada na model za pogrešnu klasifikaciju slike: 
 \begin{itemize}
@@ -58,17 +54,59 @@ Gdje $y_c$ predstavlja ciljnu klasu. U kodu to izgleda ovako:
 
 \section{FGSM napad s najznačajnijim pikselima}
 
-Ideja iza ovog napada je odabir onih piksela koji najviše utječu na promjenu funkcije gubitka. Na taj način možemo odabrati dio svih piksela tako da slika izgleda manje promijenjeno, a svejedno prevariti model. 
+Ideja iza ovog napada je odabir onih piksela koji najviše utječu na promjenu funkcije gubitka. Na taj način možemo odabrati dio svih piksela tako da slika izgleda manje promijenjeno, a svejedno prevariti model. \\
+U ovom napadu, osim parametra $\epsilon$, imamo i parametar $p$ koji predstavlja udio promijenjenih komponenti piksela. Budući da su pikseli naših podataka dani odvojeno po RGB komponentama te za svaku računamo vlastite gradijente, mi mijenjamo te komponente zasebno umjesto cijele piksele. Posljedično ćemo promijeniti vrijednosti više piksela, ali nećemo svakom pikselu promijeniti sve komponente. \\
 
-Pregled rezultata s različitim eps i k (udio najznačajnijih piksela koje mijenjamo): 
+Pregled rezultata s različitim $\epsilon$ i $p$, elementi u tablici označavaju udio slika koje je model ispravno klasificirao nakon izmjene: 
 
-\textbf{tablica ovdje..}
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{||c || c c c||} 
+		\hline
+		$\epsilon \backslash p$ & 0.1 & 0.25 & 0.5 \\ [0.5ex] 
+		\hline\hline
+		0.1 & 38\% & 18\% & 10\% \\ 
+		0.25 & 23\% & 8\% & 4\% \\
+		0.5 & 20\% & 8\% & 6\% \\ [1ex] 
+		\hline
+	\end{tabular}
+	\caption{Prikaz ispravnosti modela za napad s najznačajnijim pikselima}
+\end{table}
 
+Možemo primijetiti da povećanjem parametara $\epsilon$ i $p$ točnost modela pada. Također, povećanje parametra p puno više utječe na točnost od parametra $\epsilon$. Primjer krivo klasificirane slike kada su oba parametra 0.1:
+\begin{figure}[H]
+	\centering
+	{{\includegraphics[width=12cm]{slike/napadi/selected-grads-example.png} }}%
+	\caption{Prikaz točno kvalificirane (lijevo) i netočno kvalificirane slike (desno), $\epsilon = p = 0.1$}%
+	\label{fig:example}%
+\end{figure}
+
+Prikažimo $5\%$ najznačajnijih gradijenata za prethodnu sliku. Bojom piksela možemo prikazati koje se komponente tog piksela nalaze u $5\%$ najznačajnijih gradijenata. Ako neki piksel sadrži određenu komponentu, onda je ona dio tih gradijenata.
+\begin{figure}[H]
+	\centering
+	{{\includegraphics[width=12cm]{slike/napadi/selected-grads-visualisation.png} }}%
+	\caption{Prikaz $5\%$ najznačajnijih gradijenata}%
+	\label{fig:example}%
+\end{figure}
 
 \section{Rezultati}
 
-Usporedimo rezultate različitih napada s različitim parametrom $\epsilon$. 
+Usporedimo rezultate različitih napada s različitim parametrima $\epsilon$. \\
 
-Za prethodno navedene napade s X različitih $\epsilon$ vrijednosti navodimo s kojom sigurnošću model klasificira izmijenjenu sliku u njezinu pravu klasu.
+Za prethodno navedene napade i tri različite $\epsilon$ vrijednosti prikažimo udio izmijenjenih slika koje model klasificira u njihovu pravu klasu. Prvi napad je običan FGSM napad, drugi je FGSM napad s ciljnom klasom, a treći je FGSM napad s najznačajnijim pikselima u kojem uzimamo $p = 0.25$.
 
-\textbf{tablice i primjeri ovdje...}
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{||c || c | c | c||} 
+		\hline
+		$\epsilon$ & Napad 1 & Napad 2 & Napad 3 \\ [0.5ex] 
+		\hline\hline
+		0.01 & 71\% & 86\% & 79\% \\ 
+		0.1 & 5\% & 25\% & 18\% \\
+		0.25 & 3\% & 14\% & 8\% \\ [1ex] 
+		\hline
+	\end{tabular}
+	\caption{Usporedba ispravnosti modela za razne napade}
+\end{table}
+
+Vidimo da ni jedan napad nije jako učinkovit za $\epsilon = 0.01$. Za veće $\epsilon$ najučinkovitiji je običan FGSM napad. To je i za očekivati jer treći napad, FGSM s najznačajnijim pikselima, mijenja količinski četiri puta manje vrijednosti od običnog FGSM napada dok im je $\epsilon$ zajednički. Najlošiji napad je FGSM s ciljnom klasom, no on ne mijenja sliku u smjeru gradijenata funkcije gubitka, već u određenom smjeru koji je manje učinkovit.
