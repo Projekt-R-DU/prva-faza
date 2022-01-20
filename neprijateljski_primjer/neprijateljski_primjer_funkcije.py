@@ -112,7 +112,7 @@ def class_attack(model, dataset, target_class, eps = 0.025, n = 1000):
 
     return wrong_predictions
 
-def selected_grad_attack(model, dataset, eps = 0.5, n = 100):
+def selected_grad_attack(model, dataset, eps = 0.5, n = 100, p = 0.1):
     model.eval()
 
     correct = 0
@@ -140,7 +140,7 @@ def selected_grad_attack(model, dataset, eps = 0.5, n = 100):
 
         grads = image.grad.reshape(-1,) # 1x3xAxB u 1*3*A*B
         abs_grads = torch.abs(grads)
-        k = 500
+        k = int(abs_grads.numel() * p)
         kth_biggest_grad = abs_grads.kthvalue(abs_grads.numel() - k).values.item()
         selected_grads = abs_grads.gt(kth_biggest_grad).int().reshape(image.shape)
 
