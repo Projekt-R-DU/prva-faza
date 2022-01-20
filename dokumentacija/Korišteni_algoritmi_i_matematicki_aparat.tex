@@ -63,7 +63,7 @@ Unazadna propagacija je matematički algoritam korišten u učenju neuronskih mr
 Optimizacija je jedan od ključnih dijelova u procesu treniranja modela. Njezina svrha je minimizirati pogrešku generalizacije nad skupom kojim treniramo.
 Kad govorimo o optimizaciji, najkorištenija metoda je svakako gradijentni spust, no korištenjem njega se mogu manifestirati neki problemi koji kao posljedicu imaju nepronalazak optimalnih težina. Postojanje više lokalnih minimuma i spora kovergencija jedni su od problema. Stoga je naš izbor bio SGD i ADAM optimizator. 
 
-Stohastički gradijentni spust (SGD) za razliku od običnog gradijentnog spusta neće pasti na nulu prilikom pronalaska lokalnog ili globalnog minimuma, a razlog leži u tome što SGD procjenjuje iznos gradijenta i posoljedično stvara šum.
+Stohastički gradijentni spust (SGD) za razliku od običnog gradijentnog spusta neće pasti na nulu prilikom pronalaska lokalnog ili globalnog minimuma, a razlog leži u tome što SGD procjenjuje iznos gradijenta i posljedično stvara šum.
 Stohastički gradijenti spust koristili smo uz momentum koji ubrzava učenje. 
 
 Adaptive Moment Estimation (ADAM) je optimizator koji kombinacijom dvije metodologije gradijentnog spusta momentuma i RMSprop algoritma ubrzava pronalazak globalnog minimuma. Glavna značajka ADAM-a je što koristi prosječno eksponencijalno kretanje gradijenta i kvadratnog gradijenta, te ga to čini izrazito efikasnim na velikim skupovima podataka i

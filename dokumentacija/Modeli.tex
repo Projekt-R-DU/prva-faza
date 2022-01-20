@@ -15,3 +15,9 @@ Duboka rezidualna mreža (ResNet) je vrsta konvolucijskih neuronskih mreža. Gla
 \[y_{l} = h(x_{l}) + F(x_{l}, W_{l})\]
 \[x_{l+1} = f(y_{l}),\]
 gdje su \(x_{l}\) i \(x_{l+1}\) ulaz i izlaz \(l\)-tog bloka, a \(F\) rezidualna funkcija. \(h(x_{l})\) je funkcija identiteta koja prenosi netransformirani ulaz u rezidualni blok. Rezidualna funkcija \(F\) je implementirana kao niz transformacija nad ulaznim podacima. Ulazni podaci se transformiraju prolaskom kroz konvolucijske slojeve bloka.
+
+\begin{figure}[h]
+	\centering{\includegraphics[scale=0.5]{slike/resnet.jpg}}
+	\caption{Prikaz ResNet arhitekture}
+	\label{resnet}
+\end{figure}
