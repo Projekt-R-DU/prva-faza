@@ -8,4 +8,10 @@ Konvolucijski slojevi rješavaju ove probleme uvođenjem jezgri, koje za svoj iz
 
 \section{ResNet-18}
 
-resnet18
+Duboka rezidualna mreža (ResNet) je vrsta konvolucijskih neuronskih mreža. Glavno obilježje rezidualnih mreža je postojanje preskočnih veza. Njihova uloga je da u sljedeći blok prenose ulaz trenutnog bloka, koji nije bio transformiran prolaskom kroz slojeve prošlog bloka. Model ResNet-18 je građen od 5 rezidualnih blokova. Svaki blok sadrži 3 konvolucijska sloja.
+
+\noindent\\Rezidualni blok se može opisati sljedećim izrazima:
+
+\[y_{l} = h(x_{l}) + F(x_{l}, W_{l})\]
+\[x_{l+1} = f(y_{l}),\]
+gdje su \(x_{l}\) i \(x_{l+1}\) ulaz i izlaz \(l\)-tog bloka, a \(F\) rezidualna funkcija. \(h(x_{l})\) je funkcija identiteta koja prenosi netransformirani ulaz u rezidualni blok. Rezidualna funkcija \(F\) je implementirana kao niz transformacija nad ulaznim podacima. Ulazni podaci se transformiraju prolaskom kroz konvolucijske slojeve bloka.

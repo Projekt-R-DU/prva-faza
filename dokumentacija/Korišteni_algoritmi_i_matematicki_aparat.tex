@@ -14,20 +14,57 @@ centered
 
 
 
-\section{Backpropagation}
+\section{Unazadna propagacija}
 
-backprop
+Unazadna propagacija je matematički algoritam korišten u učenju neuronskih mreža bez povratnih veza. Cilj algoritma je odrediti koliko svaki primjerak za učenje utječe na težinske parametre mreže. Rezultat algoritma je nužan za promjenu tih težina kako bi povećali aktivaciju bitnih neurona, odnosno smanjili aktivaciju manje bitnih neurona.\\\\Model možemo matematički predstaviti kao funkcijsku kompoziciju:
+	\[g(x):=f^{L}(W^{L}f^{L-1}(W^{L-1}\cdots f^{1}(W^{1}x)\cdots ))\]
+	gdje je \(x\) ulaz, \(g(x)\) predviđeni izlaz, \(f^l\) aktivacijska funkcija sloja \(l\) te \(W^l\) matrični zapis težina između slojeva \(l\) i \(l-1\)
+	
+	\noindent\\Učenje modela se svodi na minimizaciju funkcije gubitka neuronske mreže. Za pronalazak globalnog minimuma funkcije koristi se negativni gradijent. Algoritmom se računa gradijent spomenute funkcije gubitka za svaki primjerak za učenje. Izračun uzima u obzir trenutne težinske parametre mreže.
+	
+	\[C(y,g(x))\]
+	\[C(y,f^{L}(W^{L}f^{L-1}(W^{L-1}\cdots f^{2}(W^{2}f^{1}(W^{1}x))\cdots )))\]
+	\(C\) je funkcija gubitka, \(y\) je željeni izlaz.
+	
+	\noindent\\Funkcija gubitka se lančanim pravilom derivira po \(a^l\) koji predstavlja izlazak iz aktivacijskog sloja \(l\).
+	\[{\frac {dC}{da^{L}}}\cdot (f^{L})'\circ W^{L}\cdot (f^{L-1})'\circ W^{L-1}\cdots (f^{1})'\circ W^{1}\]
+	\(\circ\) označava Hammardov produkt.
+	
+	\noindent\\Gornji izraz se transponira te se redoslijed množenja članova okrene. Dobiveni izraz predstavlja traženi gradijent.
+	\[\nabla _{x}C=(W^{1})^{T}\cdot (f^{1})'\ldots \circ (W^{L-1})^{T}\cdot (f^{L-1})'\circ (W^{L})^{T}\cdot (f^{L})'\circ \nabla _{a^{L}}C.\]
+	
+	\noindent\\Dobiveni gradijent je vektor čije vrijednosti možemo dovesti u bijektivni odnos sa težinama mreže. Interpretacija tih vrijednosti je iznos za koji primjerak za učenje želi promjeniti određenu težinu.
+	
+	\noindent\\Iz izraza za gradijent se sada može odrediti gradijent za pojedini sloj \(l\). Označimo sa \(\delta ^{l}\) gradijent ulaznih vrijednosti u sloj \(l\). 
+	\[\delta ^{l}:=(f^{l})'\circ (W^{l+1})^{T}\cdots \circ (W^{L-1})^{T}\cdot (f^{L-1})'\circ (W^{L})^{T}\cdot (f^{L})'\circ \nabla _{a^{L}}C.\]
+	
+	\noindent\\Gradijent ulaznih vrijednosti u sloj \(l\) se može zapisati rekurzivno.
+	\[\delta ^{l-1}:=(f^{l-1})'\circ (W^{l})^{T}\cdot \delta ^{l}.\]
+	
+	\noindent\\Sada se može izraziti za bilo koju razinu \(l\).
+	
+	$$\delta ^{1}\&=(f^{1})'\circ (W^{2})^{T}\cdot (f^{2})'\cdots \circ (W^{L-1})^{T}\cdot (f^{L-1})'\circ (W^{L})^{T}\cdot (f^{L})'\circ \nabla _{a^{L}}C$$
+					
+				$$\delta ^{2}\&=(f^{2})'\cdots \circ (W^{L-1})^{T}\cdot (f^{L-1})'\circ (W^{L})^{T}\cdot (f^{L})'\circ \nabla _{a^{L}}C$$
+				
+				$$\vdots$$ 
+				
+				$$\delta ^{L-1}\&=(f^{L-1})'\circ (W^{L})^{T}\cdot (f^{L})'\circ \nabla _{a^{L}}C$$
+				
+				$$\delta ^{L}\&=(f^{L})'\circ \nabla _{a^{L}}C,$$
+		
+		\noindent\\Gradijent težina za određeni sloj \(l\) se sada izražava kao:
+		\[\nabla _{W^{l}}C=\delta ^{l}(a^{l-1})^{T}.\]
+		\noindent\\Na kraju algoritma težine modela se ažuriraju sloj po sloj (od zadnjeg prema prvom) u skladu s tim vrijednostima.  
 
-\section{Momentum}
-
-momentum
 
 \section{Optimizatori}
 
-\subsection{Stochastic gradient descent}
+Optimizacija je jedan od ključnih dijelova u procesu treniranja modela. Njezina svrha je minimizirati pogrešku generalizacije nad skupom kojim treniramo.
+Kad govorimo o optimizaciji, najkorištenija metoda je svakako gradijentni spust, no korištenjem njega se mogu manifestirati neki problemi koji kao posljedicu imaju nepronalazak optimalnih težina. Postojanje više lokalnih minimuma i spora kovergencija jedni su od problema. Stoga je naš izbor bio SGD i ADAM optimizator. 
 
-sgd
+Stohastički gradijentni spust (SGD) za razliku od običnog gradijentnog spusta neće pasti na nulu prilikom pronalaska lokalnog ili globalnog minimuma, a razlog leži u tome što SGD procjenjuje iznos gradijenta i posoljedično stvara šum.
+Stohastički gradijenti spust koristili smo uz momentum koji ubrzava učenje. 
 
-\subsection{Adam}
-
-adam
+Adaptive Moment Estimation (ADAM) je optimizator koji kombinacijom dvije metodologije gradijentnog spusta momentuma i RMSprop algoritma ubrzava pronalazak globalnog minimuma. Glavna značajka ADAM-a je što koristi prosječno eksponencijalno kretanje gradijenta i kvadratnog gradijenta, te ga to čini izrazito efikasnim na velikim skupovima podataka i
+u radu s velikim brojem parametara. 
