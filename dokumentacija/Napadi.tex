@@ -1,0 +1,74 @@
+\chapter{Napadi}
+
+\newcommand{\norm}[1]{\left\|{#1}\right\|}
+
+\section{Uvod}
+
+Neprijateljski napad je tehnika korištenja neprijateljskih primjera s ciljem manipulacije izlaza klasifikacijskog modela. Neprijateljski primjer je neprimjetno izmijenjen ulaz u klasifikacijski model, koji je zbog izmjene krivo klasificiran \textbf{(ovo bolje sročiti)}.
+
+Na primjer, kod modela za prepoznavanje znamenki, ulazna slika koju model inače (točno) klasificira kao broj ‘9’ se može neprimjetno izmijeniti i krivo klasificirati kao broj ‘4’ (Slika \ref{fig:example}).
+
+\begin{figure}[H]
+    \centering
+    \subfloat[\centering Originalna slika]{{\includegraphics[width=4.5cm]{slike/napadi/uvod-example.png} }}%
+    \qquad
+    \subfloat[\centering Perturbirana slika]{{\includegraphics[width=4.5cm]{slike/napadi/uvod-example-w-eps.png} }}%
+    \caption{Primjer neprijateljskog napada, $\epsilon = 0.2$}%
+    \label{fig:example}%
+\end{figure}
+
+\section{Sažetak} 
+
+Za izgradnju neprijateljskog primjera, koristiti ćemo metodu FGSM (engl. \textit{Fast Gradient Sign Method}). Ta metoda uključuje izračun gradijenata te njihovu primjenu na ulazne podatke, ali u smjeru najbržeg rasta funkcije gubitka. Na taj način dobivamo suprotan efekt učenju modela (a to je smanjenje funkcije gubitka i bolja klasifikacija) te udaljujemo izlazne vrijednosti od onih očekivanih. 
+
+Metodu primjenjujemo na način da ulazne podatke (u našem slučaju vrijednosti piksela slike) tretiramo kao parametre modela kako bi i za njih izračunali gradijente.  
+
+\textbf{ubaci sliku koda di to radimo ovdje? }
+
+Koristili smo tri različita napada na model za pogrešnu klasifikaciju slike: 
+\begin{itemize}
+    \item Promjena piksela slike za jednaku vrijednost u smjeru predznaka gradijenata
+    \item Promjena piksela slike u smjeru predznaka gradijenta izračunatog nad ciljnom klasom
+    \item Promjena nekog udjela piksela kojima pripadaju najznačajniji gradijenti za jednaku vrijednost
+\end{itemize}
+
+\section{FGSM napad}
+
+FGSM (engl. \textit{Fast Gradient Sign Method}) je vrsta neprijateljskog napada koji se bazira na dodatku linearne količine šuma slici u smjeru predznaka gradijenta $\nabla J(x, y, \theta)$. Gdje $J$ predstavlja funkciju gubitka. Izračun gradijenata slike se može provesti nastavkom običnog gradijentnog spusta "jedan korak dalje" na samu sliku, što efektivno tretira ulaz kao parametre modela. Kao i inače, dobiveni gradijenti predstavljaju smjer izmjene za (lokalnu) maksimizaciju funkcije gubitka. Ukoliko perturbaciju označimo sa $\eta$, neprijateljski primjer se može zapisati kao: 
+\[\widetilde{x} = x + \eta\]
+
+Glavna ideja FGSM napada je pretpostavka da možemo pronaći dovoljno mali $\eta$ koji znatno utječe na izlaz modela, dok je ljudskom oku promjena neprimjetna. Iako je gradijent $\nabla J(x, y, \theta)$ po definiciji smjer najvećeg porasta gubitka (odnosno ono što želimo postići), da bi osigurali gornju granicu za $\eta$, ne možemo postaviti $\eta = \nabla J(x, y, \theta)$. Zbog toga, za $\eta$ uzimamo vrijednost: 
+\[\eta = \epsilon \cdot sign\left(\nabla J(x, y, \theta)\right)\]
+
+To osigurava ispunjenje uvjeta $\epsilon \geq \norm{\eta}$. Vrijednost $\epsilon$ je proizvoljna, čime možemo kontrolirati količinu šuma korištenog za perturbaciju. Perturbirana slika se sada može prikazati formulom: 
+\[\widetilde{x} = x + \epsilon\cdot sign\left(\nabla J(x, y, \theta)\right)\]
+
+U kodu to izgleda ovako:
+
+\textbf{L53 u neprijateljski\_primjer\_funkcije.py ovdje}
+
+\section{FGSM napad s ciljnom klasom}
+
+Malom izmjenom FGSM napada možemo dobiti neprijateljski napad s ciljnom klasom. Cilj ovog napada je izmijeniti sliku na takav način da ju model klasificira kao našu odabranu klasu (\textbf{ovo treba bolje napisati}). To se postiže promjenom načina računanja gubitka i smjera perturbacije slike. Za izračun gubitka se koristi ciljna klasa umjesto prave labele, dok se prava labela primjera potpuno zanemaruje.  Zbog toga, minimizacijom gubitka također maksimiziramo vrijednost predikcije za našu ciljnu ciljnu klasu. Cilj običnog FGSM napada je maksimizirati gubitak, stoga naša varijanta također zahtijeva i promjenu smjera u formuli perturbacije slike. Kao i prije, korak se provodi samo za ulaz, dok težine modela ostaju fiksne. Perturbirana slika se sada može prikazati formulom: 
+\[\widetilde{x} = x - \epsilon\cdot sign\left(\nabla J(x, y_c, \theta)\right)\]
+
+Gdje $y_c$ predstavlja ciljnu klasu. U kodu to izgleda ovako:
+
+\textbf{L98 u neprijateljski\_primjer\_funkcije.py ovdje}
+
+\section{FGSM napad s najznačajnijim pikselima}
+
+Ideja iza ovog napada je odabir onih piksela koji najviše utječu na promjenu funkcije gubitka. Na taj način možemo odabrati dio svih piksela tako da slika izgleda manje promijenjeno, a svejedno prevariti model. 
+
+Pregled rezultata s različitim eps i k (udio najznačajnijih piksela koje mijenjamo): 
+
+\textbf{tablica ovdje..}
+
+
+\section{Rezultati}
+
+Usporedimo rezultate različitih napada s različitim parametrom $\epsilon$. 
+
+Za prethodno navedene napade s X različitih $\epsilon$ vrijednosti navodimo s kojom sigurnošću model klasificira izmijenjenu sliku u njezinu pravu klasu.
+
+\textbf{tablice i primjeri ovdje...}
