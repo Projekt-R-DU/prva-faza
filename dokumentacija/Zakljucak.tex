@@ -1,3 +1,11 @@
 \chapter{Zaključak}
 
-zakljucak
+ResNet-18 model ima daleko bolju uspješnost od osnovnog konvolucijskog modela, pogotovo na kompleksnijim skupovima podataka.
+
+Odabir veličine grupe također utječe na preciznost - u našem slučaju, veličina grupa 128 se pokazala u prosjeku optimalnijom od 512 za oba modela i oba skupa podataka.
+
+Odabir optimizatora ima utjecaj, ali ovisi o konkretnoj arhitekturi mreže koju koristimo. Za ResNet-18, Adam se pokazao optimalnijim, dok je za osnovni konvolucijski model bolji SGD.
+
+Odabir funkcije gubitka nije imalo vidljivog učinka na uspješnost modela.
+
+Osim treniranja mreže, uspjeli smo izvesti i FGSM napade na ResNet-18 model.

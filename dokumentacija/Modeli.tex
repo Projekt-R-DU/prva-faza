@@ -2,7 +2,9 @@
 
 \section{Konvolucijska neuronska mreža}
 
-cnn
+Konvolucijski modeli su prikladni za obradu podataka kod kojih nam je bitno ostvariti kovarijantnost na translaciju, primjerice slike kod kojih se isti objekt može pojaviti na više lokacija u slici. Naime, obični potpuno povezani modeli bi morali ponovno učiti za svaku moguću lokaciju objekta, što bi dovelo do loše generalizacije. Osim toga, za veće slike, potpuno povezani modeli bi zahtijevali preveliku količinu parametara.
+
+Konvolucijski slojevi rješavaju ove probleme uvođenjem jezgri, koje za svoj izlaz razmatraju samo malo lokalno susjedstvo ulaza, koje potom "kližu" po ulazu te grade mapu značajki na ulazu. Nadalje, sažimanjem se postupno smanjuje veličina ulaza u svaki sljedeći sloj, te se na kraju opet dolazi do potpuno povezanih slojeva.
 
 \section{ResNet-18}
 
