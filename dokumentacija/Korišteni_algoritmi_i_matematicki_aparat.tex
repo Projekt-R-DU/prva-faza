@@ -20,7 +20,7 @@ Gubitak je funkcija koja nam govori koliko nam je model dobar u predviđanju na 
 	Ovakva formulacija nam osigurava da će suma svih softmaksa primijenjenih na ocjene biti 1. Iz slike \ref{fig:NLL} vidimo kako negativna log-izglednost penalizira male vjerojatnosti, dok je za vjerojatnosti koje su blizu 1 gubitak približan nuli.
 	\begin{figure}[H]
 		\centering\includegraphics[scale=0.5]{slike/neg_log.png}
-		\caption{NLL [\cite{miranda2017softmax}]}
+		\caption{NLL \cite{miranda2017softmax}}
 		\label{fig:NLL}
 	\end{figure}
 
@@ -43,7 +43,7 @@ Ovaj gubitak nastoji minimizirati udaljenosti izlaznih podataka od središta pri
 \[
 	L = L_n + \lambda L_c
 \]
- Ovaj gubitak pokazuje najbolje rezultate u slučaju kad podatci za učenje sadrže mali broj slika po razredu, a veliki broj razreda. [\cite{centerloss}]
+ Ovaj gubitak pokazuje najbolje rezultate u slučaju kad podatci za učenje sadrže mali broj slika po razredu, a veliki broj razreda. \cite{centerloss}
 	 
 
 
@@ -94,7 +94,7 @@ Unazadna propagacija je matematički algoritam korišten u učenju neuronskih mr
 \section{Optimizatori}
 
 Optimizacija je jedan od ključnih dijelova u procesu treniranja modela. Njezina svrha je minimizirati pogrešku generalizacije nad skupom kojim treniramo.
-Kad govorimo o optimizaciji, najkorištenija metoda je svakako gradijentni spust, no korištenjem njega se mogu manifestirati neki problemi koji kao posljedicu imaju nepronalazak optimalnih težina. Postojanje više lokalnih minimuma i spora kovergencija jedni su od problema. Stoga je naš izbor bio Stohastički gradijentni spust (SGD) sa zaletom i ADAM optimizator. 
+Kad govorimo o optimizaciji, najkorištenija metoda je svakako gradijentni spust, no korištenjem njega se mogu manifestirati neki problemi koji kao posljedicu imaju nepronalazak optimalnih težina. Postojanje više lokalnih minimuma i spora kovergencija jedni su od problema. Stoga je naš izbor bio Stohastički gradijentni spust \cite{sgd} (SGD) sa zaletom i ADAM \cite{adam} optimizator. 
 
 Glavna ideja optimizatora SGD je procijeniti gradijent cijelog skupa uzoraka sa malim slučajno odabranim podskupom uzoraka (mini-grupa, engl. \textit{minibatch}). Već i veličine od 128 daju vrlo dobru aproksimaciju gradijenta. U usporedbi s "običnim" gradijentnim spustom (GD) to znatno ubrzava proces učenja, jer se kod GD izračun treba provesti za \textit{cijeli} skup. Ukoliko je skup srednje veličine (npr. 60000 uzoraka) vidimo da je ubrzanje i do 500 puta.  Stohastički gradijentni spust koristili smo uz zalet koji ubrzava učenje. Umjesto ažuriranja težina koristeći samo trenutno izačunat gradijent, zalet također uzima u obzir i prethodno ažuriranje, pomnoženo sa faktorom umanjivanja $\alpha$. Optimizacijski korak možemo opisati parom jednadžbi:
 \begin{align}
