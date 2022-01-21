@@ -157,4 +157,4 @@ Za prethodno navedene napade i tri različite $\epsilon$ vrijednosti prikažimo 
 	\caption{Usporedba ispravnosti modela za razne napade}
 \end{table}
 
-Vidimo da ni jedan napad nije jako učinkovit za $\epsilon = 0.01$. Za veće $\epsilon$ najučinkovitiji je običan FGSM napad. To je i za očekivati jer treći napad, FGSM s najznačajnijim pikselima, mijenja količinski četiri puta manje vrijednosti od običnog FGSM napada dok im je $\epsilon$ zajednički. Najlošiji napad je FGSM s ciljnom klasom, no on ne mijenja sliku u smjeru gradijenata funkcije gubitka, već u određenom smjeru koji je manje učinkovit.
+Vidimo da ni jedan napad nije jako učinkovit za $\epsilon = 0.01$. Za veće $\epsilon$ najučinkovitiji je običan FGSM napad. To nije iznenađenje jer treći napad, FGSM s najznačajnijim pikselima, mijenja količinski četiri puta manje vrijednosti od običnog FGSM napada dok im je $\epsilon$ zajednički. Najlošiji napad je FGSM s ciljnom klasom, no to je i za očekivati. On ne računa gradijente koristeći pravu labelu nego koristi ciljnu, pa smjer ne pokazuje smjer najvećeg porasta gubitka.
