@@ -62,13 +62,13 @@ Na slici \ref{fig:fgsm} se vidi utjecaj parametra $\epsilon$ na rezultantnu slik
 
 \begin{figure}[H]
 	\centering
-	\subfloat[\centering Originalna slika]{{\includegraphics[width=4.5cm]{slike/napadi/FGSM_eps0.png} }}%
+	\subfloat[\centering Originalna slika]{{\includegraphics[width=4.6cm]{slike/napadi/FGSM_eps0.png} }}%
 	\qquad
-	\subfloat[\centering $\epsilon = 0.01$]{{\includegraphics[width=4.5cm]{slike/napadi/FGSM_eps0.01.png} }}%
+	\subfloat[\centering $\epsilon = 0.01$]{{\includegraphics[width=4.6cm]{slike/napadi/FGSM_eps0.01.png} }}%
 	\qquad
-	\subfloat[\centering  $\epsilon = 0.1$]{{\includegraphics[width=4.5cm]{slike/napadi/FGSM_eps0.1.png} }}%
+	\subfloat[\centering  $\epsilon = 0.1$]{{\includegraphics[width=4.6cm]{slike/napadi/FGSM_eps0.1.png} }}%
 	\qquad
-	\subfloat[\centering  $\epsilon = 0.25$]{{\includegraphics[width=4.5cm]{slike/napadi/FGSM_eps0.25.png} }}%
+	\subfloat[\centering  $\epsilon = 0.25$]{{\includegraphics[width=4.6cm]{slike/napadi/FGSM_eps0.25.png} }}%
 	\caption{Prikaz utjecaja različitog $\epsilon$}%
 	\label{fig:fgsm}
 \end{figure}
@@ -128,7 +128,8 @@ Provođenjem testa za različite $\epsilon$ vrijednosti dobivamo sljedeću tabli
 
 \section{FGSM napad s najznačajnijim pikselima}
 
-Ideja iza ovog napada je odabir onih piksela koji najviše utječu na promjenu funkcije gubitka. Na taj način možemo odabrati dio svih piksela tako da slika izgleda manje promijenjeno, a svejedno prevariti model. \\
+Ideja iza ovog napada je odabir onih piksela koji najviše utječu na promjenu funkcije gubitka. Na taj način možemo odabrati dio svih piksela tako da slika izgleda manje promijenjeno, a svejedno prevariti model. 
+
 U ovom napadu, osim parametra $\epsilon$ imamo i parametar $p$ koji predstavlja udio promijenjenih komponenti piksela. Budući da su pikseli naših podataka dani odvojeno po RGB komponentama te za svaku računamo vlastite gradijente, mijenjamo ih zasebno umjesto cijele piksele. Posljedično ćemo promijeniti vrijednosti više piksela, ali nećemo svakom pikselu promijeniti sve komponente. U kodu to izgleda ovako:
 \begin{minted}[fontsize=\small]{python}
     def pixel_FGSM(image, eps, p):
@@ -177,7 +178,7 @@ Prikažimo $5\%$ najznačajnijih gradijenata za prethodnu sliku. Bojom piksela m
 	\label{fig:najznacajniji}%
 \end{figure}
 
-\section{Rezultati}
+\section{Usporedba napada}
 
 Usporedimo rezultate različitih napada s različitim parametrima $\epsilon$. \\
 
@@ -198,3 +199,48 @@ Za prethodno navedene napade i tri različite $\epsilon$ vrijednosti prikažimo 
 \end{table}
 
 Vidimo da ni jedan napad nije jako učinkovit za $\epsilon = 0.01$. Za veće $\epsilon$ najučinkovitiji je običan FGSM napad. To nije iznenađenje jer treći napad, FGSM s najznačajnijim pikselima, mijenja količinski četiri puta manje vrijednosti od običnog FGSM napada dok im je $\epsilon$ zajednički. Najlošiji napad je FGSM s ciljnom klasom, no to je i za očekivati. On ne računa gradijente koristeći pravu oznaku nego koristi ciljnu, pa smjer ne pokazuje smjer najvećeg porasta gubitka.
+
+\section{Vizualizacija modela razreda}
+
+Tehnika vizualizacije modela razreda je slična FGSM napadu s ciljnom klasom. Cilj vizualizacije modela razreda je generiranje \textit{reprezentativne slike} za neki razred. Reprezentativna slika se generira iterativnim postupkom. Počevši od slučajnog šuma slika se iterativno ažurira gradijentnim spustom, tako da maksimizira izlaz modela za odabranu klasu. U kodu to izgleda ovako:
+
+\begin{minted}[fontsize=\small, breaklines]{python}
+def generate_images(model, shape, label, lr, n = 100):
+	class S_loss(nn.Module):
+		def __init__(self, weight=None, size_average=True):
+		super(S_loss, self).__init__()
+		
+		def forward(self, input, target):
+		return -input[0][target]
+	model.eval()
+	loss_f = S_loss()
+	# Stvaramo sliku šuma
+	new_image = torch.zeros(shape) + torch.randn(shape)*0.1
+	new_image.requires_grad = True
+	
+	optimizer = optim.SGD([new_image], lr=lr, momentum=0.9, weight_decay=1e-4)
+	
+	for _ in range(n):
+		optimizer.zero_grad()
+		output = model(new_image)
+		loss = loss_f(output, label)
+		loss.backward()
+		optimizer.step()
+
+	return new_image
+\end{minted}
+
+Ukoliko postupak provedemo za oznake skupa MNIST, dobivamo sljedeće zanimljive slike:
+
+\begin{figure}[H]
+	\centering
+	\subfloat[\centering Oznaka 1]{{\includegraphics[width=5.5cm]{slike/napadi/gen1.png} }}%
+	\qquad
+	\subfloat[\centering Oznaka 2]{{\includegraphics[width=5.5cm]{slike/napadi/gen2.png} }}%
+	\qquad
+	\subfloat[\centering Oznaka 3]{{\includegraphics[width=5.5cm]{slike/napadi/gen3.png} }}%
+	\qquad
+	\subfloat[\centering  Oznaka 8]{{\includegraphics[width=5.5cm]{slike/napadi/gen8.png} }}%
+	\caption{Prikaz vizualizacija modela razreda za različite znamenke}%
+	\label{fig:fgsm}
+\end{figure}
