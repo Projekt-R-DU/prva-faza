@@ -20,7 +20,7 @@ Gubitak je funkcija koja nam govori koliko nam je model dobar u predviđanju na 
 	Ovakva formulacija nam osigurava da će suma svih softmaksa primijenjenih na ocjene biti 1. Iz slike \ref{fig:NLL} vidimo kako negativna log-izglednost penalizira male vjerojatnosti, dok je za vjerojatnosti koje su blizu 1 gubitak približan nuli.
 	\begin{figure}[H]
 		\centering\includegraphics[scale=0.5]{slike/neg_log.png}
-		\caption{NLL}
+		\caption{NLL [\cite{miranda2017softmax}]}
 		\label{fig:NLL}
 	\end{figure}
 
@@ -43,7 +43,7 @@ Ovaj gubitak nastoji minimizirati udaljenosti izlaznih podataka od središta pri
 \[
 	L = L_n + \lambda L_c
 \]
- Ovaj gubitak pokazuje najbolje rezultate u slučaju kad podatci za učenje sadrže mali broj slika po razredu, a veliki broj razreda.
+ Ovaj gubitak pokazuje najbolje rezultate u slučaju kad podatci za učenje sadrže mali broj slika po razredu, a veliki broj razreda. [\cite{centerloss}]
 	 
 
 
