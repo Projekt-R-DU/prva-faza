@@ -61,6 +61,20 @@ Koristeći biblioteku \textit{PyTorch}, funkciju koja računa neprijateljski pri
         return new_image
 \end{minted}
 
+Provođenjem testa za različite $\epsilon$ vrijednosti dobivamo sljedeću tablicu:
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{||c || c | c | c||} 
+		\hline
+		$\epsilon$ & 0.01 & 0.1 & 0.25 \\ [0.5ex] 
+		\hline\hline
+		\% & 71\% & 5\% & 3\% \\ 
+		\hline
+	\end{tabular}
+	\caption{Udio točnih klasifikacija za razne parametre $\epsilon$}
+\end{table}
+
 
 \section{FGSM napad s ciljnom klasom}
 
@@ -85,6 +99,21 @@ Gdje $y_c$ predstavlja ciljnu klasu. U kodu to izgleda ovako:
         # Vraćamo neprijateljski primjer
         return new_image
 \end{minted}
+
+Provođenjem testa za različite $\epsilon$ vrijednosti dobivamo sljedeću tablicu:
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{||c || c | c | c||} 
+		\hline
+		$\epsilon$ & 0.01 & 0.1 & 0.25 \\ [0.5ex] 
+		\hline\hline
+		\% & 86\% & 25\% & 14\% \\ 
+		\hline
+	\end{tabular}
+	\caption{Udio točnih klasifikacija za razne parametre $\epsilon$}
+\end{table}
+
 
 \section{FGSM napad s najznačajnijim pikselima}
 
