@@ -19,14 +19,17 @@ Na primjer, kod modela za prepoznavanje znamenki, ulazna slika koju model inače
 
 \section{Sažetak} 
 
-Za izgradnju neprijateljskog primjera, koristimo metodu FGSM (engl. \textit{Fast Gradient Sign Method}). Ta metoda uključuje izračun gradijenata te njihovu primjenu na ulazne podatke, ali u smjeru najbržeg rasta funkcije gubitka. Na taj način dobivamo suprotan efekt učenju modela (a to je smanjenje funkcije gubitka i bolja klasifikacija) te udaljujemo izlazne vrijednosti od onih očekivanih. Metodu primjenjujemo na način da ulazne podatke (u našem slučaju vrijednosti piksela slike) tretiramo kao parametre modela kako bi i za njih izračunali gradijente. \\
+Za izgradnju neprijateljskog primjera koristimo metodu FGSM (engl. \textit{Fast Gradient Sign Method}). Ta metoda uključuje izračun gradijenata ulaznih podataka i ažuriranje slike ulaza \textit{približno}\footnote{Koristimo predznak gradijenta umjesto sam gradijent, pa ne pokazuje \textit{točno} u smjeru najvećeg porasta funkcije.} u smjeru najvećeg rasta funkcije gubitka. Takvo ažuriranje slike ima efekt udaljavanja izlazne vrijednosti od točne klasifikacije. \\
 
 Koristimo tri različita napada na model za pogrešnu klasifikaciju slike: 
 \begin{itemize}
-    \item Promjena piksela slike za jednaku vrijednost u smjeru predznaka gradijenata
+	\setlength\itemsep{-0.25em}
+    \item Promjena piksela slike za jednaku vrijednost u smjeru predznaka gradijenata (običan FGSM)
     \item Promjena piksela slike u smjeru predznaka gradijenta izračunatog nad ciljnom klasom
     \item Promjena nekog udjela piksela kojima pripadaju najznačajniji gradijenti za jednaku vrijednost
 \end{itemize}
+
+Svaki napad smo proveli na skupu podataka CIFAR10 i koristeći prethodno spomenut ResNet-18 model.
 
 \section{FGSM napad}
 
@@ -86,7 +89,7 @@ Gdje $y_c$ predstavlja ciljnu klasu. U kodu to izgleda ovako:
 \section{FGSM napad s najznačajnijim pikselima}
 
 Ideja iza ovog napada je odabir onih piksela koji najviše utječu na promjenu funkcije gubitka. Na taj način možemo odabrati dio svih piksela tako da slika izgleda manje promijenjeno, a svejedno prevariti model. \\
-U ovom napadu, osim parametra $\epsilon$ imamo i parametar $p$ koji predstavlja udio promijenjenih komponenti piksela. Budući da su pikseli naših podataka dani odvojeno po RGB komponentama te za svaku računamo vlastite gradijente, mi mijenjamo te komponente zasebno umjesto cijele piksele. Posljedično ćemo promijeniti vrijednosti više piksela, ali nećemo svakom pikselu promijeniti sve komponente. U kodu to izgleda ovako:
+U ovom napadu, osim parametra $\epsilon$ imamo i parametar $p$ koji predstavlja udio promijenjenih komponenti piksela. Budući da su pikseli naših podataka dani odvojeno po RGB komponentama te za svaku računamo vlastite gradijente, mijenjamo ih zasebno umjesto cijele piksele. Posljedično ćemo promijeniti vrijednosti više piksela, ali nećemo svakom pikselu promijeniti sve komponente. U kodu to izgleda ovako:
 \begin{minted}[fontsize=\small]{python}
     def pixel_FGSM(image, eps, p):
         # ...
@@ -121,17 +124,17 @@ Pregled rezultata s različitim $\epsilon$ i $p$, elementi u tablici označavaju
 Možemo primijetiti da povećanjem parametara $\epsilon$ i $p$ točnost modela pada. Također, povećanje parametra p puno više utječe na točnost od parametra $\epsilon$. Primjer krivo klasificirane slike kada su oba parametra 0.1:
 \begin{figure}[H]
 	\centering
-	{{\includegraphics[width=12cm]{slike/napadi/selected-grads-example.png} }}%
+	{{\includegraphics[width=11.5cm]{slike/napadi/selected-grads-example.png} }}%
 	\caption{Prikaz točno kvalificirane (lijevo) i netočno kvalificirane slike (desno), $\epsilon = p = 0.1$}%
-	\label{fig:example}%
+	\label{fig:pixel_fgsm}%
 \end{figure}
 
 Prikažimo $5\%$ najznačajnijih gradijenata za prethodnu sliku. Bojom piksela možemo prikazati koje se komponente tog piksela nalaze u $5\%$ najznačajnijih gradijenata. Ako neki piksel sadrži određenu komponentu, onda je ona dio tih gradijenata.
 \begin{figure}[H]
 	\centering
-	{{\includegraphics[width=12cm]{slike/napadi/selected-grads-visualisation.png} }}%
+	{{\includegraphics[width=11.5cm]{slike/napadi/selected-grads-visualisation.png} }}%
 	\caption{Prikaz $5\%$ najznačajnijih gradijenata}%
-	\label{fig:example}%
+	\label{fig:najznacajniji}%
 \end{figure}
 
 \section{Rezultati}
