@@ -88,6 +88,7 @@ Provođenjem testa za različite $\epsilon$ vrijednosti dobivamo sljedeću tabli
 \end{table}
 
 \section{FGSM napad s ciljnom klasom}
+\label{ciljnaklasa}
 
 Malom izmjenom FGSM napada možemo dobiti neprijateljski napad s ciljnom klasom. Cilj ovog napada je izmijeniti sliku na takav način da ju model klasificira kao neku unaprijed odabranu klasu različitu od originalne. To se postiže promjenom načina računanja gubitka i smjera perturbacije slike. Za izračun gubitka se koristi ciljna klasa umjesto prave oznake, dok se prava oznaka primjera potpuno zanemaruje.  Zbog toga, minimizacijom gubitka također maksimiziramo vrijednost predikcije za našu ciljnu klasu. Cilj običnog FGSM napada je maksimizirati gubitak, stoga naša varijanta također zahtijeva i promjenu smjera u formuli perturbacije slike. Kao i prije, korak se provodi samo za ulaz, dok težine modela ostaju fiksne. Perturbirana slika se sada može prikazati formulom: 
 \[\widetilde{x} = x - \epsilon\cdot sign\left(\nabla J(x, y_c, \theta)\right)\]
@@ -202,16 +203,16 @@ Vidimo da ni jedan napad nije jako učinkovit za $\epsilon = 0.01$. Za veće $\e
 
 \section{Vizualizacija modela razreda}
 
-Tehnika vizualizacije modela razreda je slična FGSM napadu s ciljnom klasom. Cilj vizualizacije modela razreda je generiranje \textit{reprezentativne slike} za neki razred. Reprezentativna slika se generira iterativnim postupkom. Počevši od slučajnog šuma slika se iterativno ažurira gradijentnim spustom, tako da maksimizira izlaz modela za odabranu klasu. U kodu to izgleda ovako:
+Tehnika vizualizacije modela razreda \cite{simonyan2014deep} je slična FGSM napadu s ciljnom klasom. Cilj vizualizacije modela razreda je generiranje \textit{reprezentativne slike} za neki razred. Reprezentativna slika se generira iterativnim postupkom. Počevši od slučajnog šuma slika se iterativno ažurira gradijentnim spustom, tako da maksimizira izlaz modela za odabranu klasu. U kodu to izgleda ovako:
 
 \begin{minted}[fontsize=\small, breaklines]{python}
-def generate_images(model, shape, label, lr, n = 100):
-	class S_loss(nn.Module):
-		def __init__(self, weight=None, size_average=True):
-		super(S_loss, self).__init__()
-		
-		def forward(self, input, target):
+	
+class S_loss(nn.Module):
+	def __init__(self): super(S_loss, self).__init__()
+	def forward(self, input, target):
 		return -input[0][target]
+
+def generate_images(model, shape, label, lr, n = 100):
 	model.eval()
 	loss_f = S_loss()
 	# Stvaramo sliku šuma
@@ -219,7 +220,7 @@ def generate_images(model, shape, label, lr, n = 100):
 	new_image.requires_grad = True
 	
 	optimizer = optim.SGD([new_image], lr=lr, momentum=0.9, weight_decay=1e-4)
-	
+	#Optimizacijska petlja
 	for _ in range(n):
 		optimizer.zero_grad()
 		output = model(new_image)
