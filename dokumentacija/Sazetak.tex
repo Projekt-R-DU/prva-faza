@@ -5,3 +5,5 @@ Kroz ovaj projekt smo uspoređivali osnovni konvolucijski model s modelom ResNet
 Istražili smo kako na uspješnost oba modela utječu različiti faktori poput veličine grupe, odabira različitih optimizatora te upotreba različitih funkcija gubitka. 
 
 Modeli su trenirani kroz 30 epoha na skupovima podataka CIFAR i MNIST, te je njihova uspješnost evaluirana na nezavisnom skupu.
+
+Nakon treniranja, uspješno su izvedeni neprijateljski napadi na ResNet-18 model. Korišteni napadi su varijacije na FGSM  (engl. \textit{Fast Gradient Sign Method}). Također smo uspjeli generirati reprezentativne slike za određen razred kao što je prikazano u radu \cite{simonyan2014deep}, maksimizirajući odziv modela za taj razred.

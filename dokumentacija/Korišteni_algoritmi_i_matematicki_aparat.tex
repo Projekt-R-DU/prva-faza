@@ -76,15 +76,15 @@ Unazadna propagacija je matematički algoritam korišten u učenju neuronskih mr
 	
 	\noindent\\Sada se može izraziti za bilo koju razinu \(l\).
 	
-	$$\delta ^{1}\&=(f^{1})'\circ (W^{2})^{T}\cdot (f^{2})'\cdots \circ (W^{L-1})^{T}\cdot (f^{L-1})'\circ (W^{L})^{T}\cdot (f^{L})'\circ \nabla _{a^{L}}C$$
+	$$\delta ^{1}=(f^{1})'\circ (W^{2})^{T}\cdot (f^{2})'\cdots \circ (W^{L-1})^{T}\cdot (f^{L-1})'\circ (W^{L})^{T}\cdot (f^{L})'\circ \nabla _{a^{L}}C$$
 					
-				$$\delta ^{2}\&=(f^{2})'\cdots \circ (W^{L-1})^{T}\cdot (f^{L-1})'\circ (W^{L})^{T}\cdot (f^{L})'\circ \nabla _{a^{L}}C$$
+				$$\delta ^{2}=(f^{2})'\cdots \circ (W^{L-1})^{T}\cdot (f^{L-1})'\circ (W^{L})^{T}\cdot (f^{L})'\circ \nabla _{a^{L}}C$$
 				
 				$$\vdots$$ 
 				
-				$$\delta ^{L-1}\&=(f^{L-1})'\circ (W^{L})^{T}\cdot (f^{L})'\circ \nabla _{a^{L}}C$$
+				$$\delta ^{L-1}=(f^{L-1})'\circ (W^{L})^{T}\cdot (f^{L})'\circ \nabla _{a^{L}}C$$
 				
-				$$\delta ^{L}\&=(f^{L})'\circ \nabla _{a^{L}}C,$$
+				$$\delta ^{L}=(f^{L})'\circ \nabla _{a^{L}}C,$$
 		
 		\noindent\\Gradijent težina za određeni sloj \(l\) se sada izražava kao:
 		\[\nabla _{W^{l}}C=\delta ^{l}(a^{l-1})^{T}.\]
