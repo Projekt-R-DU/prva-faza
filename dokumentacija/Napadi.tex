@@ -12,7 +12,7 @@ Na primjer, kod modela za prepoznavanje znamenki, ulazna slika koju model inače
     \centering
     \subfloat[\centering Originalna slika]{{\includegraphics[width=4.5cm]{slike/napadi/uvod-example.png} }}%
     \qquad
-    \subfloat[\centering Perturbirana slika]{{\includegraphics[width=4.5cm]{slike/napadi/uvod-example-w-eps.png} }}%
+    \subfloat[\centering Perturbirana slika]{{\includegraphics[width=4.7cm]{slike/napadi/uvod-example-w-eps.png} }}%
     \caption{Primjer neprijateljskog napada, $\epsilon = 0.2$}%
     \label{fig:uvod_example}%
 \end{figure}
@@ -48,18 +48,30 @@ Koristeći biblioteku \textit{PyTorch}, funkciju koja računa neprijateljski pri
     def FGSM(image, eps):
         # Želimo gradijente i za ulaz
         image.requires_grad = True
-
         # Evaluiramo model i računamo gradijente
         output = model(image)
         loss = loss_f(output, label)
         loss.backward()
-
         # Perturbiramo sliku u smjeru predznaka gradijenta
         new_image = image + eps*image.grad.data.sign()
-        
         # Vraćamo neprijateljski primjer
         return new_image
 \end{minted}
+
+Na slici \ref{fig:fgsm} se vidi utjecaj parametra $\epsilon$ na rezultantnu sliku i evaluaciju modela.
+
+\begin{figure}[H]
+	\centering
+	\subfloat[\centering Originalna slika]{{\includegraphics[width=4.5cm]{slike/napadi/FGSM_eps0.png} }}%
+	\qquad
+	\subfloat[\centering $\epsilon = 0.01$]{{\includegraphics[width=4.5cm]{slike/napadi/FGSM_eps0.01.png} }}%
+	\qquad
+	\subfloat[\centering  $\epsilon = 0.1$]{{\includegraphics[width=4.5cm]{slike/napadi/FGSM_eps0.1.png} }}%
+	\qquad
+	\subfloat[\centering  $\epsilon = 0.25$]{{\includegraphics[width=4.5cm]{slike/napadi/FGSM_eps0.25.png} }}%
+	\caption{Prikaz utjecaja različitog $\epsilon$}%
+	\label{fig:fgsm}
+\end{figure}
 
 Provođenjem testa za različite $\epsilon$ vrijednosti dobivamo sljedeću tablicu:
 
@@ -74,7 +86,6 @@ Provođenjem testa za različite $\epsilon$ vrijednosti dobivamo sljedeću tabli
 	\end{tabular}
 	\caption{Udio točnih klasifikacija za razne parametre $\epsilon$}
 \end{table}
-
 
 \section{FGSM napad s ciljnom klasom}
 
