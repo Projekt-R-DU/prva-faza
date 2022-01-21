@@ -94,10 +94,24 @@ Unazadna propagacija je matematički algoritam korišten u učenju neuronskih mr
 \section{Optimizatori}
 
 Optimizacija je jedan od ključnih dijelova u procesu treniranja modela. Njezina svrha je minimizirati pogrešku generalizacije nad skupom kojim treniramo.
-Kad govorimo o optimizaciji, najkorištenija metoda je svakako gradijentni spust, no korištenjem njega se mogu manifestirati neki problemi koji kao posljedicu imaju nepronalazak optimalnih težina. Postojanje više lokalnih minimuma i spora kovergencija jedni su od problema. Stoga je naš izbor bio SGD i ADAM optimizator. 
+Kad govorimo o optimizaciji, najkorištenija metoda je svakako gradijentni spust, no korištenjem njega se mogu manifestirati neki problemi koji kao posljedicu imaju nepronalazak optimalnih težina. Postojanje više lokalnih minimuma i spora kovergencija jedni su od problema. Stoga je naš izbor bio Stohastički gradijentni spust (SGD) sa zaletom i ADAM optimizator. 
 
-Stohastički gradijentni spust (SGD) za razliku od običnog gradijentnog spusta neće pasti na nulu prilikom pronalaska lokalnog ili globalnog minimuma, a razlog leži u tome što SGD procjenjuje iznos gradijenta i posljedično stvara šum.
-Stohastički gradijenti spust koristili smo uz momentum koji ubrzava učenje. 
+Glavna ideja optimizatora SGD je procijeniti gradijent cijelog skupa uzoraka sa malim slučajno odabranim podskupom uzoraka (mini-grupa, engl. \textit{minibatch}). Već i veličine od 128 daju vrlo dobru aproksimaciju gradijenta. U usporedbi s "običnim" gradijentnim spustom (GD) to znatno ubrzava proces učenja, jer se kod GD izračun treba provesti za \textit{cijeli} skup. Ukoliko je skup srednje veličine (npr. 60000 uzoraka) vidimo da je ubrzanje i do 500 puta.  Stohastički gradijentni spust koristili smo uz zalet koji ubrzava učenje. Umjesto ažuriranja težina koristeći samo trenutno izačunat gradijent, zalet također uzima u obzir i prethodno ažuriranje, pomnoženo sa faktorom umanjivanja $\alpha$. Optimizacijski korak možemo opisati parom jednadžbi:
+\begin{align}
+& v = \alpha v + \nabla_W C 
+& \theta = \theta + \eta v
+\end{align}
+Gdje je $v$ trenutno akumuliran 'zalet', a $\eta$ stopa učenja.
 
-Adaptive Moment Estimation (ADAM) je optimizator koji kombinacijom dvije metodologije gradijentnog spusta momentuma i RMSprop algoritma ubrzava pronalazak globalnog minimuma. Glavna značajka ADAM-a je što koristi prosječno eksponencijalno kretanje gradijenta i kvadratnog gradijenta, te ga to čini izrazito efikasnim na velikim skupovima podataka i
-u radu s velikim brojem parametara. 
+ 
+U kodu smo incijalizaciju SGD-a napravili ovako:
+
+\begin{minted}[fontsize=\small, breaklines]{python}
+	optimizer = optim.SGD(net.parameters(), lr=1e-1, momentum=0.9, weight_decay=1e-4)
+\end{minted}
+
+Adaptive Moment Estimation (ADAM) je optimizator koji kombinacijom dvije metodologije gradijentnog spusta zaleta i RMSprop algoritma ubrzava pronalazak globalnog minimuma. Glavna značajka ADAM-a je što koristi prosječno eksponencijalno kretanje gradijenta i kvadratnog gradijenta, te ga to čini izrazito efikasnim na velikim skupovima podataka i u radu s velikim brojem parametara. U kodu smo koristili sljedeću inicijalizaciju za ADAM:
+
+\begin{minted}[fontsize=\small, breaklines]{python}
+	optimizer = optim.Adam(net.parameters(), lr=3e-4)
+\end{minted}
