@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.optim as optim
 import matplotlib.pyplot as plt
 
 def get_label(i, cifar):
@@ -17,6 +18,11 @@ def plot(wrong_predictions, n = 5, cifar = True):
         axs[i, 0].set_title(f"{get_label(wrong_predictions[i][1].item(), cifar)} - {wrong_predictions[i][4]}")
         axs[i, 1].imshow(torch.clamp(wrong_predictions[i][2][0], min = 0.0, max = 1.0).detach().cpu().permute(1, 2, 0))
         axs[i, 1].set_title(f"{get_label(wrong_predictions[i][3].item(), cifar)} - {wrong_predictions[i][5]}")
+
+def plot_single(img, gray = False):
+    plt.figure()
+    if gray: plt.imshow(img, cmap='gray')
+    else: plt.imshow(img)
 
 def get_guess_and_prob(output):
     guess = output.max(1, keepdim=True)[1][0]
@@ -160,6 +166,38 @@ def selected_grad_attack(model, dataset, eps = 0.5, n = 100, p = 0.1):
             break
 
     return wrong_predictions
+
+def generate_images(model, shape, label, eps = 0.025, n = 100):
+    class S_loss(nn.Module):
+        def __init__(self, weight=None, size_average=True):
+            super(S_loss, self).__init__()
+
+        def forward(self, input, target):
+            return -input[0][target]
+
+    model.eval()
+    label = torch.as_tensor([label]).to('cuda:0')
+    loss_f = S_loss()
+
+    wrong_predictions = []
+
+    # Stvaramo sliku šuma
+    new_image = torch.zeros(shape) + torch.randn(shape)*0.1
+    new_image = new_image.to('cuda:0')
+    new_image.requires_grad = True
+
+    optimizer = optim.SGD([new_image], lr=eps, momentum=0.9, weight_decay=1e-4)
+
+    for _ in range(n):
+        optimizer.zero_grad()
+
+        output = model(new_image)
+        loss = loss_f(output, label)
+        loss.backward()
+
+        optimizer.step()
+    print(loss)
+    return new_image
 
 def show_grads(wrong_predictions, n = 5, p = 0.05):
     fig, axs = plt.subplots(max(2, n), 2, figsize=(10, n * 10))
